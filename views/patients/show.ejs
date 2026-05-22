@@ -46,15 +46,15 @@
             
             <div class="info-grid" style="box-shadow: none; border: none; padding: 0; display: flex; flex-direction: column; gap: 1.25rem; width: 100%; max-width: 100%;">
               <div class="info-item" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem;">
-                <label style="margin: 0;">First Name</label>
+                <span style="color: var(--secondary); font-size: 0.9rem; font-weight: 500;">First Name</span>
                 <span style="font-size: 1.1rem; font-weight: 600;"><%= patient.firstName %></span>
               </div>
               <div class="info-item" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 0.5rem;">
-                <label style="margin: 0;">Last Name</label>
+                <span style="color: var(--secondary); font-size: 0.9rem; font-weight: 500;">Last Name</span>
                 <span style="font-size: 1.1rem; font-weight: 600;"><%= patient.lastName %></span>
               </div>
               <div class="info-item" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding-bottom: 0.5rem;">
-                <label style="margin: 0;">Date of Birth</label>
+                <span style="color: var(--secondary); font-size: 0.9rem; font-weight: 500;">Date of Birth</span>
                 <span style="font-size: 1.1rem; font-weight: 600;"><%= patient.dob || '—' %></span>
               </div>
             </div>
@@ -106,7 +106,7 @@
             <a href="/patients/<%= patient._id %>/billing/recommendation" class="action-card" style="width: 280px; min-width: 280px; max-width: 280px; box-sizing: border-box; margin: 0; border-color: var(--primary);">
               <span style="font-size: 1.5rem; margin-bottom: 6px; display: block;">★</span>
               <strong style="color: var(--primary);">Optimize Billing Rank</strong>
-              <p style="font-size: 0.8rem; color: var(--secondary); margin: 4px 0 0 0; line-height: 1.3;">Analyze logic order & scores</p>
+              <p style="font-size: 0.8rem; color: var(--secondary); margin: 4px 0 0 0; line-height: 1.3;">View full ranked plan breakdown</p>
             </a>
             
             <a href="/patients/<%= patient._id %>/billing/new" class="action-card" style="width: 280px; min-width: 280px; max-width: 280px; box-sizing: border-box; margin: 0;">
@@ -118,13 +118,53 @@
           </div>
         </div>
 
+        <div class="billing-simulator-panel" style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #fafafa; width: 100%; box-sizing: border-box;">
+          <div style="background: #f1f5f9; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.2rem;">📊</span>
+            <h3 style="margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dark); font-weight: 700;">
+              Interactive Billing Simulation Matrix
+            </h3>
+          </div>
+          
+          <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+            <p style="margin: 0; font-size: 0.9rem; color: #475569; line-height: 1.4;">
+              Run dynamic cross-plan pricing simulations. Enter a workflow option flag below to evaluate multi-tier copay splits, standalone cash pricing, or workers' compensation injury guidelines.
+            </p>
+            
+            <textarea id="engineNotes" placeholder="Type workflow request criteria here (e.g., 'patient wants coupon vs insurance', 'cash price option', 'manufacturer coupon')..." style="width: 100%; height: 75px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 0.9rem; resize: none; background: white;"></textarea>
+            
+            <div>
+              <button id="runEngineBtn" class="btn" style="background: var(--text-dark); color: white; padding: 10px 20px; font-weight: 600; cursor: pointer; border-radius: 4px; border: none; font-size: 0.9rem;">
+                Run Pricing Simulation
+              </button>
+            </div>
+
+            <div id="engineLoading" style="display: none; font-size: 0.9rem; color: #2563eb; font-weight: 600; align-items: center; gap: 0.5rem; padding: 0.5rem 0;">
+              🔄 Intercepting criteria logs and mapping comparative valuation tables...
+            </div>
+
+            <div id="engineResults" style="display: none; background: white; border: 1px solid var(--border); border-radius: 6px; padding: 1.25rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
+              <div id="sequenceList" style="margin: 0 0 1.5rem 0; width: 100%;"></div>
+              
+              <h4 style="margin: 0 0 0.5rem 0; color: var(--text-dark); font-size: 0.95rem; font-weight: 700;">Engine Workflow Strategy Guidance:</h4>
+              <p id="engineReasoning" style="margin: 0; line-height: 1.5; color: #475569; font-size: 0.9rem; font-style: italic; background: #f8fafc; padding: 12px; border-left: 3px solid #64748b; border-radius: 0 4px 4px 0;"></p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
     <a href="/patients/search" style="color: var(--secondary); text-decoration: none; font-size: 0.9rem; margin-left: 4px; margin-top: 1rem; display: inline-block;">← Back to Search</a>
   </div>
 
-  <%- include('../partials/_footer.ejs') %>
+  <div id="insurance-data-bridge" data-plans="<%= JSON.stringify(insurancePlans || []) %>" style="display: none;"></div>
 
+  <script nonce="<%= locals.nonce %>">
+    const rawInsuranceData = JSON.parse(document.getElementById('insurance-data-bridge').getAttribute('data-plans'));
+  </script>
+  <script src="/js/billingSimulator.js" nonce="<%= locals.nonce %>"></script>
+
+  <%- include('../partials/_footer.ejs') %>
 </body>
 </html>

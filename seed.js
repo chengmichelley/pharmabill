@@ -39,54 +39,6 @@ const patientsMock = [
   },
 ];
 
-const insuranceTemplates = [
-  {
-    providerName: "CVS Caremark",
-    bin: "004336",
-    pcn: "ADV",
-    group: "RX2026",
-    coverageType: "commercial",
-    relationship: "self",
-    priority: 0,
-  },
-  {
-    providerName: "Express Scripts",
-    bin: "003858",
-    pcn: "A4",
-    group: "ESI2025",
-    coverageType: "commercial",
-    relationship: "dependent",
-    priority: 10,
-  },
-  {
-    providerName: "Medicare Part D",
-    bin: "610502",
-    pcn: "MEDDADV",
-    group: "MCD2026",
-    coverageType: "medicare",
-    relationship: "self",
-    priority: 0,
-  },
-  {
-    providerName: "State Medicaid",
-    bin: "610014",
-    pcn: "MCAID",
-    group: "STATEFL",
-    coverageType: "medicaid",
-    relationship: "self",
-    priority: 0,
-  },
-  {
-    providerName: "GoodRx Discount",
-    bin: "015995",
-    pcn: "GDRX",
-    group: "GRX99",
-    coverageType: "coupon",
-    relationship: "self",
-    priority: 5,
-  },
-];
-
 const seedDatabase = async () => {
   try {
     console.log("🔄 Starting database initialization wipe...");
@@ -101,16 +53,16 @@ const seedDatabase = async () => {
 
     await User.create({
       username: "admin_demo",
-      hashedPassword: password123,
+      hashedPassword: adminPassword,
       role: "admin",
-      });
+    });
 
     await User.create({
       username: "staff_demo",
-      hashedPassword: password123,
+      hashedPassword: staffPassword,
       role: "staff",
-      });
-        
+    });
+
     console.log(
       "🔑 Generated admin_demo (Admin) and staff_demo (Staff) with password123.",
     );
@@ -122,41 +74,125 @@ const seedDatabase = async () => {
     );
 
     console.log("💳 Compiling coordinated insurance tracks...");
-    let insuranceCount = 0;
 
-    for (const patient of createdPatients) {
-      if (patient.isInactivated) continue;
+    const john = createdPatients.find((p) => p.firstName === "John");
+    const jane = createdPatients.find((p) => p.firstName === "Jane");
+    const robert = createdPatients.find((p) => p.firstName === "Robert");
+    const maria = createdPatients.find((p) => p.firstName === "Maria");
 
-      const policyCount = Math.floor(Math.random() * 3) + 1;
-      const templatesShuffled = [...insuranceTemplates].sort(
-        () => 0.5 - Math.random(),
-      );
+    await Insurance.create([
+      {
+        providerName: "CVS Caremark",
+        bin: "004336",
+        pcn: "ADV",
+        group: "RX2026",
+        coverageType: "commercial",
+        type: "commercial",
+        relationship: "self",
+        priority: 0,
+        status: "active",
+        memberId: "PB83749201",
+        patient: john._id,
+      },
+      {
+        providerName: "Pfizer Mfg Copay Card",
+        bin: "015995",
+        pcn: "PCNMFG",
+        group: "PFZ2026",
+        coverageType: "coupon",
+        type: "coupon",
+        relationship: "self",
+        priority: 0,
+        status: "active",
+        memberId: "PB11029384",
+        patient: john._id,
+      },
+    ]);
 
-      for (let i = 0; i < policyCount; i++) {
-        const template = templatesShuffled[i];
+    await Insurance.create([
+      {
+        providerName: "Medicare Part D",
+        bin: "610502",
+        pcn: "MEDDADV",
+        group: "MCD2026",
+        coverageType: "medicare",
+        type: "medicare",
+        relationship: "self",
+        priority: 0,
+        status: "active",
+        memberId: "PB55483920",
+        patient: jane._id,
+      },
+      {
+        providerName: "Humana Copay Savings Card",
+        bin: "015995",
+        pcn: "HUMMFG",
+        group: "HUM99",
+        coverageType: "coupon",
+        type: "coupon",
+        relationship: "self",
+        priority: 0,
+        status: "active",
+        memberId: "PB22938401",
+        patient: jane._id,
+      },
+    ]);
 
-        const randomIdDigits = Math.floor(
-          10000000 + Math.random() * 90000000,
-        ).toString();
+    await Insurance.create([
+      {
+        providerName: "Express Scripts",
+        bin: "003858",
+        pcn: "A4",
+        group: "ESI2025",
+        coverageType: "commercial",
+        type: "commercial",
+        relationship: "dependent",
+        priority: 0,
+        status: "active",
+        memberId: "PB99203948",
+        patient: robert._id,
+      },
+      {
+        providerName: "GoodRx Discount",
+        bin: "015995",
+        pcn: "GDRX",
+        group: "GRX99",
+        coverageType: "coupon",
+        type: "coupon",
+        relationship: "self",
+        priority: 0,
+        status: "active",
+        memberId: "PB77302941",
+        patient: robert._id,
+      },
+    ]);
 
-        await Insurance.create({
-          ...template,
-          memberId: "PB" + randomIdDigits,
-          patient: patient._id,
-        });
-        insuranceCount++;
-      }
-    }
+    await Insurance.create([
+      {
+        providerName: "State Medicaid",
+        bin: "610014",
+        pcn: "MCAID",
+        group: "STATEFL",
+        coverageType: "medicaid",
+        type: "medicaid",
+        relationship: "self",
+        priority: 0,
+        status: "active",
+        memberId: "PB44102938",
+        patient: maria._id,
+      },
+    ]);
 
+    const totalInsurances = await Insurance.countDocuments({});
     console.log(
-      `✅ Successfully stored ${insuranceCount} billing insurance coverages.`,
+      `✅ Successfully stored ${totalInsurances} billing insurance coverages.`,
     );
     console.log("🚀 Database seeding operation completed flawlessly!");
     process.exit(0);
   } catch (error) {
     console.error(
       "❌ Critical fault caught running initialization script:",
-      error.message,
+      error.stack || error.message,
     );
     process.exit(1);
   }

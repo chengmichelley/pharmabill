@@ -8,11 +8,12 @@ const methodOverride = require("method-override");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const session = require("express-session");
-const MongoStore = require("connect-mongo").default || require("connect-mongo");
+const MongoStore = require("connect-mongo");
 
 const patientController = require("./controllers/patients");
 const authRoutes = require("./controllers/auth");
 const userRoutes = require("./controllers/users");
+const billingEngineRouter = require("./controllers/billingEngine");
 
 const authRequired = require("./middleware/authRequired");
 const viewData = require("./middleware/viewData");
@@ -56,7 +57,7 @@ app.set("view cache", true);
 app.set("trust proxy", 1);
 
 // =======================
-// SESSION CONFIGURATION 
+// SESSION CONFIGURATION
 // =======================
 app.use(
   session({
@@ -80,6 +81,7 @@ app.use(
 // =======================
 app.use(viewData);
 app.use("/auth", authRoutes);
+app.use("/api/billing", authRequired, billingEngineRouter);
 
 app.get("/", (req, res) => {
   res.render("home.ejs");

@@ -181,18 +181,19 @@ router.get("/:id", async (req, res) => {
 
     req.session.selectedPatientId = patient._id;
 
-    const ranked = await recommend(patient._id);
+    const insurancePlans = await Insurance.find({ patient: patient._id });
 
+    const ranked = await recommend(patient._id);
     const primaryInsurance = ranked.length > 0 ? ranked[0] : null;
 
     res.render("patients/show.ejs", {
       patient,
+      insurancePlans, 
       primaryInsurance,
     });
   } catch (error) {
     res.status(400).render("error.ejs", { err: error.message });
   }
 });
-
 
 module.exports = router;
