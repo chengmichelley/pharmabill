@@ -305,8 +305,8 @@ Ran all test suites.
 * Plans are automatically sorted and labeled as **Primary**, **Secondary**, **Tertiary**, **Medicaid**, or **Coupon**.
 
 **4. Run the On-Demand Engine Panel**
-* From the **Patient Profile**, use the **Billing Recommendation Engine** panel to run the engine interactively.
-* Optionally add staff notes for edge cases (e.g., *"cash price option"*) before clicking **Run Billing Engine**.
+* From the **Patient Profile**, use the **Interactive Billing Simulation Matrix** panel to run the engine interactively.
+* Optionally add staff notes for edge cases (e.g., *"cash price option"*) before clicking **Run Pricing Simulation**.
 * The panel returns a comparison table with network verification, compliance alerts, mock copay estimates, and a coordination strategy summary.
 
 **5. Admin Management** *(Admin Role Only)*
