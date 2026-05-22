@@ -158,7 +158,7 @@ Once sorted, the array maps user-friendly labels to dashboard cards so staff imm
 
 | Dashboard View | Admin Staff Directory |
 | :--- | :--- |
-| ![Dashboard Screenshot](./public/images/PharmaBillDashboard.png) | ![Admin Staff Directory Screenshot](./public/images/) |
+| ![Dashboard Screenshot](./public/images/PharmaBillDashboard.png) | ![Admin Staff Directory Screenshot](./public/images/PharmaBillAdminStaffDirectory.png) |
 
 | Patient Search | Patient Profile |
 | :--- | :--- |
@@ -166,7 +166,7 @@ Once sorted, the array maps user-friendly labels to dashboard cards so staff imm
 
 | Billing Rank View | Interactive Billing Simulation Matrix |
 | :--- | :--- |
-| ![Billing Rank Screenshot](./public/images/) | ![Interactive Billing Simulation Matrix](./public/images/) |
+| ![Billing Rank Screenshot](./public/images/PharmaBillBillingRank.png) | ![Interactive Billing Simulation Matrix](./public/images/PharmaBillInteractiveBillingSimulationMatrix.png) |
 
 ---
 
